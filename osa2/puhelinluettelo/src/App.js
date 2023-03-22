@@ -35,9 +35,9 @@ const App = () => {
       number: newNumber,
     }
 
-    let found
+    let found = persons.find(person => person.name === newName)
 
-    if (found = persons.find(person => person.name === newName)) {
+    if (found) {
       if (window.confirm(`${newName} is already added to phonebook, replace old number with a new one?`)) {
         personsService
           .update(found.id, entryObject)
@@ -48,13 +48,15 @@ const App = () => {
             }, 5000)
             setPersons(persons.map(p => p.id !== found.id ? p : person))
           })
-          .catch(() => {
-            setErrorMessage(`information of ${found.name} has already been deleted on the server`)
+          .catch((error) => {
+            setErrorMessage(error.response.data.error)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
 
-            setPersons(persons.filter(p => p.id !== found.id))
+            if (error.response.status === 404) {
+              setPersons(persons.filter(p => p.id !== found.id))
+            }
           })
       }
     } else {
@@ -66,6 +68,12 @@ const App = () => {
             setSuccessMessage(null)
           }, 5000)
           setPersons(persons.concat(person))
+        })
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
@@ -79,18 +87,20 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    if (window.confirm(`Delete ${persons[id - 1].name}?`)) {
+    const person = persons.find((p) => p.id === id)
+
+    if (window.confirm(`Delete ${person.name}?`)) {
       personsService
         .remove(id)
         .then(() => {
-          setSuccessMessage(`Deleted ${persons[id -1].name}`)
+          setSuccessMessage(`Deleted ${person.name}`)
           setTimeout(() => {
             setSuccessMessage(null)
           }, 5000)
           setPersons(persons.filter(p => p.id !== id))
         })
         .catch(() => {
-          setErrorMessage(`information of ${persons[id -1].name} has already been deleted on the server`)
+          setErrorMessage(`information of ${person.name} has already been deleted on the server`)
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)

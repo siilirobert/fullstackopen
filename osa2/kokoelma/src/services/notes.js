@@ -1,11 +1,15 @@
 import axios from 'axios'
-
-const baseUrl = '/api/persons'
+const baseUrl = '/api/notes'
 
 const getAll = () => {
-  return axios
-    .get(baseUrl)
-    .then(response => response.data)
+  const request = axios.get(baseUrl)
+  const nonExisting = {
+    id: 10000,
+    content: 'This note doesn\'t exist',
+    important: true
+  }
+
+  return request.then(response => response.data.concat(nonExisting))
 }
 
 const create = (newObject) => {
@@ -20,9 +24,4 @@ const update = (id, newObject) => {
     .then(response => response.data)
 }
 
-const remove = (id) => {
-  return axios
-    .delete(`${baseUrl}/${id}`)
-}
-
-export default { getAll, create, update, remove }
+export default { getAll, create, update }
