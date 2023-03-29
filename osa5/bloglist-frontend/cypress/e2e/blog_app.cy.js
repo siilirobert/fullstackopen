@@ -90,7 +90,7 @@ describe('Blog app', function () {
         })
       })
 
-      it.only('should show the blogs in correct order', function () {
+      it('should show the blogs in correct order', function () {
         cy
           .contains('The title with the most likes')
           .contains('view')
