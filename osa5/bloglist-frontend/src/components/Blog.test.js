@@ -34,7 +34,7 @@ test('blog url, likes and user is shown after details view button is clicked', a
     username: 'someuser'
   }
 
-  const { container } = render(<Blog blog={blog} loggedInUser={loggedInUser}/>)
+  const { container } = render(<Blog blog={blog} loggedInUser={loggedInUser} />)
 
   const user = userEvent.setup()
   const button = screen.getByText('view')
@@ -65,7 +65,9 @@ test('clicking the like button twice triggers event handler twice', async () => 
 
   const mockHandler = jest.fn()
 
-  render(<Blog blog={blog} loggedInUser={loggedInUser} handleLike={mockHandler}/>)
+  render(
+    <Blog blog={blog} loggedInUser={loggedInUser} handleLike={mockHandler} />
+  )
 
   const user = userEvent.setup()
   const viewButton = screen.getByText('view')

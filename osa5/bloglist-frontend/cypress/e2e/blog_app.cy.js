@@ -65,9 +65,14 @@ describe('Blog app', function () {
       it('can be removed', function () {
         cy.contains('view').click()
         cy.contains('remove').click()
-        cy.on('window:confirm', function () { true })
+        cy.on('window:confirm', function () {
+          true
+        })
 
-        cy.get('html').should('not.contain', 'Cypress test blog title Cypress test blog author')
+        cy.get('html').should(
+          'not.contain',
+          'Cypress test blog title Cypress test blog author'
+        )
       })
     })
 
@@ -91,13 +96,9 @@ describe('Blog app', function () {
       })
 
       it('should show the blogs in correct order', function () {
-        cy
-          .contains('The title with the most likes')
-          .contains('view')
-          .click()
+        cy.contains('The title with the most likes').contains('view').click()
 
-        cy
-          .contains('The title with the most likes')
+        cy.contains('The title with the most likes')
           .get('#like-button')
           .click()
           .wait(500)
@@ -105,30 +106,28 @@ describe('Blog app', function () {
           .wait(500)
           .click()
 
-        cy
-          .contains('The title with the most likes')
-          .contains('hide')
-          .click()
+        cy.contains('The title with the most likes').contains('hide').click()
 
-        cy
-          .contains('The title with the second most likes')
+        cy.contains('The title with the second most likes')
           .contains('view')
           .click()
 
-        cy
-          .contains('The title with the second most likes')
+        cy.contains('The title with the second most likes')
           .get('#like-button')
           .click()
           .wait(500)
           .click()
 
-        cy
-          .contains('The title with the second most likes')
+        cy.contains('The title with the second most likes')
           .contains('hide')
           .click()
 
-        cy.get('.blogBasicInfo').eq(0).should('contain', 'The title with the most likes')
-        cy.get('.blogBasicInfo').eq(1).should('contain', 'The title with the second most likes')
+        cy.get('.blogBasicInfo')
+          .eq(0)
+          .should('contain', 'The title with the most likes')
+        cy.get('.blogBasicInfo')
+          .eq(1)
+          .should('contain', 'The title with the second most likes')
       })
     })
   })
@@ -143,7 +142,7 @@ describe('Blog app', function () {
 
     cy.login({ username: 'othertester', password: 'secret' })
     cy.createBlog({
-      title: 'Blog that shouldn\'t be removable',
+      title: 'Blog that shouldnt be removable',
       author: 'Other Author',
       url: 'otherblog.com'
     })
