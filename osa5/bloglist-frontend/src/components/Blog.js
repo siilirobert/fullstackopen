@@ -21,10 +21,7 @@ const Blog = ({ blog, handleLike, handleDelete, loggedInUser }) => {
     <div style={blogStyle}>
       <div className="blogBasicInfo">
         {blog.title} {blog.author}{' '}
-        <button
-          id="view-hide-button"
-          onClick={() => setDetailsShown(!detailsShown)}
-        >
+        <button id="view-hide-button" onClick={() => setDetailsShown(!detailsShown)}>
           {detailsShown ? 'hide' : 'view'}
         </button>
       </div>
