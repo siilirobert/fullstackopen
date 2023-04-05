@@ -1,21 +1,23 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import { useState, useEffect } from 'react'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
-import { setNotification } from './reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
-import { getLoggedInUser, login, logout } from './reducers/userReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { getLoggedInUser, login } from './reducers/userReducer'
+import { Routes, Route, useMatch } from 'react-router-dom'
+import Users from './components/Users'
+import MainPage from './components/MainPage'
+import User from './components/User'
+import { getAllUsers } from './reducers/usersReducer'
+import BlogPage from './components/BlogPage'
+import Menu from './components/Menu'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
+  const loggedInUser = useSelector((state) => state.user)
+  const users = useSelector((state) => state.users)
   const blogs = useSelector((state) => state.blogs)
-  const user = useSelector((state) => state.user)
-
-  const blogFormRef = useRef()
 
   const dispatch = useDispatch()
 
@@ -27,6 +29,10 @@ const App = () => {
     dispatch(getLoggedInUser())
   }, [])
 
+  useEffect(() => {
+    dispatch(getAllUsers())
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
     dispatch(login({ username, password }))
@@ -34,40 +40,13 @@ const App = () => {
     setPassword('')
   }
 
-  const handleLogout = () => {
-    dispatch(logout())
-  }
+  const usersMatch = useMatch('users/:id')
+  const user = usersMatch ? users.find((user) => user.id === usersMatch.params.id) : null
 
-  const addNewBlog = (newBlog) => {
-    blogFormRef.current.toggleVisibility()
-    dispatch(createBlog(newBlog))
-    dispatch(
-      setNotification({
-        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
-        isError: false,
-        time: 5
-      })
-    )
-  }
+  const blogsMatch = useMatch('blogs/:id')
+  const blog = blogsMatch ? blogs.find((blog) => blog.id === blogsMatch.params.id) : null
 
-  const handleLike = (blog) => {
-    dispatch(likeBlog(blog))
-    dispatch(
-      setNotification({
-        message: 'blog liked',
-        isError: false,
-        time: 5
-      })
-    )
-  }
-
-  const handleDelete = (id) => {
-    dispatch(removeBlog(id))
-  }
-
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-
-  if (user === null) {
+  if (loggedInUser === null) {
     return (
       <div>
         <Notification />
@@ -102,24 +81,16 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Menu />
+      <h2>blog app</h2>
       <Notification />
-      <p>
-        {user.name} logged in<button onClick={handleLogout}>logout</button>
-      </p>
 
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addNewBlog} />
-      </Togglable>
-      {sortedBlogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleDelete={handleDelete}
-          loggedInUser={user}
-        />
-      ))}
+      <Routes>
+        <Route path="users" element={<Users />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="users/:id" element={<User user={user} />} />
+        <Route path="blogs/:id" element={<BlogPage blog={blog} />} />
+      </Routes>
     </div>
   )
 }
